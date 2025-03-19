@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #222;
+            color: white;
+        }
+        h1 {
+            color: gold;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 200px;
+            margin: auto;
+        }
+        .grid div {
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .red { background-color: red; color: white; }
+        .black { background-color: black; color: white; }
+        .green { background-color: green; color: white; }
+        .prediction-box {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: red; /* Updated to red */
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Live Roulette Prediction</h1>
+    <div class="grid" id="numberGrid"></div>
+
+    <h2 class="prediction-box">Predicted Numbers: <span id="prediction1">-</span>, <span id="prediction2">-</span></h2>
+    <button onclick="addNumber()">Add Number</button>
+
+    <script>
+        const numbers = [];
+        const colorMap = {
+            "0": "green", "1": "red", "2": "black", "3": "red", "4": "black",
+            "5": "red", "6": "black", "7": "red", "8": "black", "9": "red",
+            "10": "black", "11": "black", "12": "red", "13": "black",
+            "14": "red", "15": "black", "16": "red", "17": "black",
+            "18": "red", "19": "red", "20": "black", "21": "red",
+            "22": "black", "23": "red", "24": "black", "25": "red",
+            "26": "black", "27": "red", "28": "black", "29": "black",
+            "30": "red", "31": "black", "32": "red", "33": "black",
+            "34": "red", "35": "black", "36": "red"
+        };
+
+        function addNumber() {
+            const newNumber = prompt("Enter last detected roulette number (0-36):");
+            if (newNumber !== null && newNumber >= 0 && newNumber <= 36) {
+                numbers.unshift(parseInt(newNumber));
+                if (numbers.length > 9) numbers.pop(); // Keep only last 9 numbers
+                updateGrid();
+                updatePrediction();
+            } else {
+                alert("Invalid number! Enter a value between 0 and 36.");
+            }
+        }
+
+        function updateGrid() {
+            const grid = document.getElementById("numberGrid");
+            grid.innerHTML = "";
+            numbers.forEach(num => {
+                const div = document.createElement("div");
+                div.innerText = num;
+                div.className = colorMap[num] || "black";
+                grid.appendChild(div);
+            });
+        }
+
+        function updatePrediction() {
+            if (numbers.length < 3) return;
+
+            const lastNum = numbers[0];
+            const secondLast = numbers[1];
+            const diff = Math.abs(lastNum - secondLast);
+
+            let prediction1, prediction2;
+            if (diff <= 3) {
+                prediction1 = lastNum + 1;
+                prediction2 = lastNum - 1;
+            } else if (diff >= 10) {
+                prediction1 = lastNum - 1;
+                prediction2 = lastNum + 2;
+            } else {
+                prediction1 = lastNum + diff;
+                prediction2 = lastNum - diff;
+            }
+
+            if (prediction1 > 36) prediction1 = 36;
+            if (prediction1 < 0) prediction1 = 0;
+            if (prediction2 > 36) prediction2 = 36;
+            if (prediction2 < 0) prediction2 = 0;
+
+            document.getElementById("prediction1").innerText = prediction1;
+            document.getElementById("prediction2").innerText = prediction2;
+        }
+    </script>
+
+</body>
+</html>
